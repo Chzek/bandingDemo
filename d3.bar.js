@@ -7,6 +7,7 @@ function bar(){
   var width = 300;
   var height = 200;
   var color = "steelblue";
+  var labelColor = "white";
   var margin = { top: 10, right: 30, bottom: 30, left: 30 };
   var data = [];	// [{name: value, value: value },{},...]
   var svg, xAxis, yAxis, line, y, x, bars, labels;
@@ -49,11 +50,18 @@ function bar(){
      	bars = svg.selectAll(".bar")
      		.data(data, function(d){ return d.name; })
      		.enter().append("rect")
-     		.attr("class", "bar")
+     		.attr("class", function(d){ return d.name + " bar"; })
      		.attr("x", function(d){ return x(d.name); })
      		.attr("y", function(d){ return y(d.value); })
      		.attr("height", function(d){ return height - y(d.value); })
-     		.attr("width", x.rangeBand());
+     		.attr("width", x.rangeBand())
+        .attr("fill", function(d, i){
+          if(typeof(color) === "object"){
+            return color[i];
+          }else{
+            return color;
+          };
+        });
 
       labels = svg.selectAll("text")
         .data(data, function(d){ return d.name; })
@@ -62,7 +70,13 @@ function bar(){
         .attr("x", function(d, i){ return i * (width / data.length) + (width / data.length - .05) / 2; })
         .attr("y", function(d){ return y(d.value) + 14; })
         .attr("text-anchor", "middle")
-        .attr("fill", "white")
+        .attr("fill", function(d, i){
+          if(typeof(labelColor) === "object"){
+            return labelColor[i];
+          }else{
+            return labelColor;
+          };
+        })
         .text(function(d){ return d.value; });
 
   	}else{		// refresh
@@ -127,6 +141,12 @@ function bar(){
   object.color = function(value){
     if (!arguments.length) return color;
     color = value;
+    return object;
+  };
+
+  object.labelColor = function(value){
+    if (!arguments.length) return labelColor;
+    labelColor = value;
     return object;
   };
 
