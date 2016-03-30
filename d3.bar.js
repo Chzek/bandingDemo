@@ -3,12 +3,12 @@
 */
 function bar(){
   // Default settings
-  var $el = d3.select("body")
-  var width = 300;
-  var height = 200;
+  var $el = d3.select("body");
+  var margin = { top: 10, right: 30, bottom: 30, left: 30 };
+  var width = 300 - margin.left - margin.right;
+  var height = 200 - margin.top - margin.bottom;
   var color = "steelblue";
   var labelColor = "white";
-  var margin = { top: 10, right: 30, bottom: 30, left: 30 };
   var data = [];	// [{name: value, value: value },{},...]
   var svg, xAxis, yAxis, line, y, x, bars, labels;
 
@@ -128,13 +128,13 @@ function bar(){
 
   object.width = function(value){
     if (!arguments.length) return width;
-    width = value;
+    width = value - margin.left - margin.right;
     return object;
   };
 
   object.height = function(value){
     if (!arguments.length) return height;
-    height = value;
+    height = value - margin.top - margin.bottom;
     return object;
   };
 

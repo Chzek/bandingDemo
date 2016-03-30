@@ -120,6 +120,7 @@ var line = line()
 var bar = bar()
 	.$el(d3.select("#bar-1"))
 	.data(bandIt(data))
+	.width(400)
 	.color(["green", "blue", "yellow", "red"])
 	.labelColor(["black", "white", "black", "black"])
 	.render();
@@ -127,9 +128,9 @@ var bar = bar()
 /*
 * Refresh graphs repeatedly
 */
-setInterval(function(){
-	var data = sinData();
-	line.data(data).render();
-	bar.data(bandIt(data)).render();
-}, 3000);
+// setInterval(function(){
+// 	var data = sinData();
+// 	line.data(data).render();
+// 	bar.data(bandIt(data)).render();
+// }, 3000);
 </script>

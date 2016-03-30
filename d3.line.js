@@ -3,11 +3,11 @@
 */
 function line(){
   // Default settings
-  var $el = d3.select("body")
-  var width = 960;
-  var height = 500;
-  var color = "steelblue";
+  var $el = d3.select("body");
   var margin = { top: 10, right: 30, bottom: 30, left: 30 };
+  var width = 960 - margin.left - margin.right;
+  var height = 500 - margin.top - margin.bottom;
+  var color = "steelblue";
   var data = [];  // [{ x: value, y:value }, {...}, ...]
   var svg, y, xAxis, yAxis, line;
   var x = d3.scale.linear().range([0, width]);
@@ -95,13 +95,13 @@ function line(){
 
   object.width = function(value){
     if (!arguments.length) return width;
-    width = value;
+    width = value - margin.left - margin.right;
     return object;
   };
 
   object.height = function(value){
     if (!arguments.length) return height;
-    height = value;
+    height = value - margin.top - margin.bottom;
     return object;
   };
 
