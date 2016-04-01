@@ -25,10 +25,13 @@ body {
 <body>
   <div id="line-1"></div>
   <div id="bar-1"></div>
+  <div id="donut-1"></div>
 
 <script src="http://d3js.org/d3.v3.js"></script>
 <script src="d3.line.js"></script>
 <script src="d3.bar.js"></script>
+<script src="d3.donut.js"></script>
+<script src="generator.js"></script>
 
 <script>
 
@@ -108,29 +111,40 @@ var bandIt = function(data){
 /*
 * Create graphs
 */
-var data = sinData();
+var days = 28;
+var data = generator().days(days).calculate();
 
 var line = line()
-              .$el(d3.select("#line-1"))
-              .height(200) // Set height
-              .width(1000)
-              .data(data) // Set data
-              .render();
+	.$el(d3.select("#line-1"))
+	.height(200) // Set height
+	.width(1000)
+	.data(data) // Set data
+	.render();
 
 var bar = bar()
 	.$el(d3.select("#bar-1"))
 	.data(bandIt(data))
 	.width(400)
-	.color(["green", "blue", "yellow", "red"])
+	.color(["green", "blue", "orange", "red"])
 	.labelColor(["black", "white", "black", "black"])
+	// .mouseOver(function(d){ alert(d.value); })
+	.render();
+
+var donut = donut()
+	.$el(d3.select("#donut-1"))
+	.data(bandIt(data))
+	.color(["green", "blue", "orange", "red"])
 	.render();
 
 /*
 * Refresh graphs repeatedly
 */
-// setInterval(function(){
-// 	var data = sinData();
-// 	line.data(data).render();
-// 	bar.data(bandIt(data)).render();
-// }, 3000);
+setInterval(function(){
+	var data = generator().days(days).calculate();
+	var bandedData = bandIt(data);
+
+	line.data(data).render();
+	bar.data(bandedData).render();
+	donut.data(bandedData).render();
+}, 3000);
 </script>

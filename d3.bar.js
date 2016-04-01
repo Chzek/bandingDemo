@@ -9,8 +9,12 @@ function bar(){
   var height = 200 - margin.top - margin.bottom;
   var color = "steelblue";
   var labelColor = "white";
-  var data = [];	// [{name: value, value: value },{},...]
+  var data = [];	// [{name: "value", value: value },{},...]
   var svg, xAxis, yAxis, line, y, x, bars, labels;
+
+  var mouseOver = function(d){ return false; };
+  var mouseLeave = function(d){ return false; };
+  var mouseClick = function(d){ return false; };
 
   var object = {};
 
@@ -61,7 +65,10 @@ function bar(){
           }else{
             return color;
           };
-        });
+        })
+        .on("mouseover", mouseOver)
+        .on("mouseenter", mouseLeave)
+        .on("click", mouseClick);
 
       labels = svg.selectAll("text")
         .data(data, function(d){ return d.name; })
@@ -111,7 +118,7 @@ function bar(){
         .text(function(d){ return d.value; });
   	}
   	return object;
-  }
+  };
 
   // Getter and setter methods
   object.data = function(value){
@@ -147,6 +154,24 @@ function bar(){
   object.labelColor = function(value){
     if (!arguments.length) return labelColor;
     labelColor = value;
+    return object;
+  };
+
+  object.mouseOver = function(value){
+    if (!arguments.length) return mouseOver;
+    mouseOver = value;
+    return object;
+  };
+
+  object.mouseLeave = function(value){
+    if (!arguments.length) return mouseLeave;
+    mouseLeave = value;
+    return object;
+  };
+
+  object.mouseClick = function(value){
+    if (!arguments.length) return mouseClick;
+    mouseClick = value;
     return object;
   };
 
