@@ -4,7 +4,7 @@
 function bar(){
   // Default settings
   var $el = d3.select("body");
-  var margin = { top: 10, right: 30, bottom: 30, left: 30 };
+  var margin = { top: 10, right: 30, bottom: 30, left: 35 };
   var width = 300 - margin.left - margin.right;
   var height = 200 - margin.top - margin.bottom;
   var color = "steelblue";
@@ -176,5 +176,4 @@ function bar(){
   };
 
   return object;
-  
-}
+};
