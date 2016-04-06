@@ -75,7 +75,7 @@ function bar(){
         .enter()
         .append("text")
         .attr("x", function(d, i){ return i * (width / data.length) + (width / data.length - .05) / 2; })
-        .attr("y", function(d){ return y(d.value) + 14; })
+        .attr("y", function(d){ if(y(d.value) + 24 > height){ return height - 10; }else{ return y(d.value) + 14;} })
         .attr("text-anchor", "middle")
         .attr("fill", function(d, i){
           if(typeof(labelColor) === "object"){
@@ -88,6 +88,8 @@ function bar(){
 
   	}else{		// refresh
   		object.data(data);
+      x.rangeRoundBands([0, width], .05);
+      y.range([height, 0]);
   		x.domain(data.map(function(d) { return d.name; }));
   		y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
@@ -114,7 +116,7 @@ function bar(){
       labels.transition()
         .duration(1000)
         .attr("x", function(d, i){ return i * (width / data.length) + (width / data.length - .05) / 2; })
-        .attr("y", function(d){ return y(d.value) + 14; })
+        .attr("y", function(d){ if(y(d.value) + 24 > height){ return height - 10; }else{ return y(d.value) + 14;} })
         .text(function(d){ return d.value; });
   	}
   	return object;

@@ -58,6 +58,9 @@ function line(){
         .attr("d", line);
     }else{ //Refresh
       object.data(data);
+      y.range([height, 0]);
+      x.range([0, width]);
+
       x.domain(d3.extent(data, function(d) { return d.x; }));
       y.domain(d3.extent(data, function(d) { return d.y; }));
 

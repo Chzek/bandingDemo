@@ -1,69 +1,135 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+<html>
+	<head>
+	<!DOCTYPE html>
+	<meta charset="utf-8">
 
-body {
-  font: 10px sans-serif;
-}
+	<link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
+	<script src="bower_components/material-design-lite/material.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.blue-deep_orange.min.css" />
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+	<style>
+		body {
+		  font: 10px sans-serif;
+		}
 
-.line {
-  fill: none;
-  stroke-width: 1.5px;
-}
+		.axis path,
+		.axis line {
+		  fill: none;
+		  stroke: #000;
+		  shape-rendering: crispEdges;
+		}
 
-.tooltip .circle{
-  fill: none;
-}
-</style>
+		.line {
+		  fill: none;
+		  stroke-width: 1.5px;
+		}
+
+		.tooltip .circle{
+		  fill: none;
+		}
+
+		.vertical{
+			-webkit-appearance: slider-vertical;
+		  height: 160px;
+		  width: 10px;
+		}
+	</style>
 <body>
-  <div id="controls">
-  	<label for="amplitude">Amplitude:</label>
-  	<input id="amplitude" type="number" min="0" max="100" step="5" onchange="generator.amplitude(parseInt(this.value));" />
+<!-- Always shows a header, even in smaller screens. -->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+      <!-- Title -->
+      <span class="mdl-layout-title">Banding Demo</span>
+      <!-- Add spacer, to align navigation to the right -->
+      <div class="mdl-layout-spacer"></div>
+      <!-- Navigation. We hide it in small screens. -->
+      <nav class="mdl-navigation mdl-layout--large-screen-only">
+			<!-- <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a> -->
+      </nav>
+    </div>
+  </header>
 
-  	<label for="growth">Growth:</label>
-  	<input id="growth" type="number" onchange="generator.growth(parseInt(this.value));" />
-
-
-
-  	<button onclick="update();">Update</button>
+  <div class="mdl-layout__drawer">
+    <span class="mdl-layout-title">Banding Demo</span>
+    <nav class="mdl-navigation">
+    <!-- <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a> -->
+    </nav>
   </div>
-  <div id="line-1" width="900px" height="200px" style="display: inline-block;"></div>
-  <div id="bar-1" width="400px" height="200px" style="display: inline-block;"></div>
-  <div id="donut-1"></div>
-  <table>
-  	<thead>
-	  	<tr>
-	  		<th rowspan="2">Run</th>
-	  		<th rowspan="2">Min</th>
-	  		<th rowspan="2">Max</th>
-	  		<th colspan="2">Quartiles</th>
-	  		<th rowspan="2">Mean</th>
-	  		<th rowspan="2">Deviation</th>
-	  		<th rowspan="2">Varience</th>
-	  		<th rowspan="2">Amplitude</th>
-	  		<th rowspan="2">Growth</th>
-	  		<th rowspan="2">Days</th>
-	  		<th colspan="4">Bands</th>
-	  	</tr>
-	  	<tr>
-	  		<th>Lower</th>
-	  		<th>Upper</th>
-	  		<th>Low</th>
-	  		<th>Medium</th>
-	  		<th>High</th>
-	  		<th>Critical</th>
-	  	</tr>
-	  </thead>
-	  <tbody>
-	  </tbody>
-	</table>
+
+  <main class="mdl-layout__content">
+	  <div id="controls"  class="mdl-grid">
+	    <div class="mdl-cell mdl-cell--2-col mdl-shadow--2dp mdl-textfield--floating-label">
+	    	<label class="" for="amplitude">Amplitude:</label>
+		  	<input id="amplitude" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" onchange="generator.amplitude(parseInt(this.value)); update();" />
+		  </div>
+		  <div class="mdl-cell mdl-cell--2-col mdl-shadow--2dp mdl-textfield--floating-label">
+		  	<label class="" for="growth">Growth:</label>
+		  	<input id="growth" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0" onchange="generator.growth(parseInt(this.value)); update();" />
+		  </div>
+	  	<div class="mdl-cell mdl-cell--1-col mdl-shadow--2dp">
+	  		<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+			    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="days" onchange="generator.days(parseInt(this.value));">
+			    <label class="mdl-textfield__label" for="days">Days...</label>
+			    <span class="mdl-textfield__error">Input is not a number!</span>
+			  </div>
+		  </div>
+		  <div class="mdl-cell mdl-cell--1-col mdl-cell--6-offset">
+		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="update();">Update</button>
+		  </div>
+	  </div>
+
+	  <div class="mdl-grid">
+	  	<div id="line" class="mdl-cell mdl-cell--9-col mdl-shadow--2dp">
+		  	<div id="line-1"></div>
+		  </div>
+		  <div id="bar" class="mdl-cell mdl-cell--3-col mdl-shadow--2dp">
+				<div id="bar-1"></div>
+			</div>
+		</div>
+
+		<div class="mdl-grid">
+			<table class="mdl-data-table mdl-js-data-table mdl-cell mdl-cell--10-col mdl-cell--1-offset mdl-shadow--2dp">
+		  	<thead>
+			  	<tr>
+			  		<th rowspan="2">Run</th>
+			  		<th rowspan="2">Min</th>
+			  		<th rowspan="2">Max</th>
+			  		<th colspan="2">Quartiles</th>
+			  		<th rowspan="2">Mean</th>
+			  		<th rowspan="2">Deviation</th>
+			  		<th rowspan="2">Varience</th>
+			  		<th rowspan="2">Amplitude</th>
+			  		<th rowspan="2">Growth</th>
+			  		<th rowspan="2">Days</th>
+			  		<th colspan="4">Bands</th>
+			  	</tr>
+			  	<tr>
+			  		<th>Lower</th>
+			  		<th>Upper</th>
+			  		<th>Low</th>
+			  		<th>Medium</th>
+			  		<th>High</th>
+			  		<th>Critical</th>
+			  	</tr>
+			  </thead>
+			  <tbody>
+			  </tbody>
+			</table>
+		</div>
+	  
+	  <div id="donut-1"></div>
+
+	  
+	</main>
+</div>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
@@ -106,13 +172,13 @@ var run = 0;
 var line = line()
 	.$el(d3.select("#line-1"))
 	.height(200) // Set height
-	.width(900)
+	.width(document.getElementById('line').offsetWidth)
 	.data(data) // Set data
 	.render();
 var bar = bar()
 	.$el(d3.select("#bar-1"))
 	.data(generator.bands())
-	.width(400)
+	.width(document.getElementById('bar').offsetWidth)
 	.color(["green", "blue", "orange", "red"])
 	.labelColor(["black", "white", "black", "black"])
 	// .mouseOver(function(d){ alert(d.value); })
@@ -124,6 +190,11 @@ appendTable(generator.stats());
 // 	.data(bandIt(data))
 // 	.color(["green", "blue", "orange", "red"])
 // 	.render();
+
+window.onresize = function(){
+	line.width(document.getElementById('line').offsetWidth).render();
+	bar.width(document.getElementById('bar').offsetWidth).render();
+} ;
 
 function update(){
 	data = generator.calculate();

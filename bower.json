@@ -1,0 +1,22 @@
+{
+  "name": "bandingDemo",
+  "description": "Generator to create a sine wave with additional noise. Tools to create a dashboard around this data.",
+  "main": "index.html",
+  "moduleType": [],
+  "authors": [
+    "Geren Mroczek"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "material-design-lite": "^1.1.3"
+  }
+}
