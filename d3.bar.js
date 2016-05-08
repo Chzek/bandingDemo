@@ -10,18 +10,27 @@ function bar(){
   var color = "steelblue";
   var labelColor = "white";
   var data = [];	// [{name: "value", value: value },{},...]
-  var svg, xAxis, yAxis, line, y, x, bars, labels;
-
   var mouseOver = function(d){ return false; };
   var mouseLeave = function(d){ return false; };
   var mouseClick = function(d){ return false; };
+  var svg, xAxis, yAxis, line, y, x, bars, labels;
 
-  var object = {};
+  var object = {
+    $el: $el,
+    width: width,
+    height: height,
+    color: color,
+    labelColor: labelColor,
+    data: data,
+    mouseOver: mouseOver,
+    mouseLeave: mouseLeave,
+    mouseClick: mouseClick
+  };
 
   // Method for render/refresh graph
   object.render = function(){
   	if(!svg){ 	// Render first time
-  		x = d3.scale.ordinal().rangeRoundBands([0, width], .05)
+  		x = d3.scale.ordinal().rangeRoundBands([0, width], 0.05)
   			.domain(data.map(function(d) { return d.name; }));
 
       y = d3.scale.linear()
@@ -64,7 +73,7 @@ function bar(){
             return color[i];
           }else{
             return color;
-          };
+          }
         })
         .on("mouseover", mouseOver)
         .on("mouseenter", mouseLeave)
@@ -74,7 +83,7 @@ function bar(){
         .data(data, function(d){ return d.name; })
         .enter()
         .append("text")
-        .attr("x", function(d, i){ return i * (width / data.length) + (width / data.length - .05) / 2; })
+        .attr("x", function(d, i){ return i * (width / data.length) + (width / data.length - 0.05) / 2; })
         .attr("y", function(d){ if(y(d.value) + 24 > height){ return height - 10; }else{ return y(d.value) + 14;} })
         .attr("text-anchor", "middle")
         .attr("fill", function(d, i){
@@ -82,13 +91,13 @@ function bar(){
             return labelColor[i];
           }else{
             return labelColor;
-          };
+          }
         })
         .text(function(d){ return d.value; });
 
   	}else{		// refresh
   		object.data(data);
-      x.rangeRoundBands([0, width], .05);
+      x.rangeRoundBands([0, width], 0.05);
       y.range([height, 0]);
   		x.domain(data.map(function(d) { return d.name; }));
   		y.domain([0, d3.max(data, function(d) { return d.value; })]);
@@ -107,7 +116,7 @@ function bar(){
 
      	bars.transition()
      		.duration(1000)
-     		.attr("x", function(d){ return x(d.name); console.log(d.name); })
+     		.attr("x", function(d){ return x(d.name); })
      		.attr("y", function(d){ return y(d.value); })
      		.attr("height", function(d){ return height - y(d.value); })
      		.attr("width", x.rangeBand());
@@ -115,7 +124,7 @@ function bar(){
       labels = svg.selectAll("text").data(data, function(d){ return d.name; });
       labels.transition()
         .duration(1000)
-        .attr("x", function(d, i){ return i * (width / data.length) + (width / data.length - .05) / 2; })
+        .attr("x", function(d, i){ return i * (width / data.length) + (width / data.length - 0.05) / 2; })
         .attr("y", function(d){ if(y(d.value) + 24 > height){ return height - 10; }else{ return y(d.value) + 14;} })
         .text(function(d){ return d.value; });
   	}
@@ -123,12 +132,6 @@ function bar(){
   };
 
   // Getter and setter methods
-  object.data = function(value){
-    if (!arguments.length) return data;
-    data = value;
-    return object;
-  };
-
   object.$el = function(value){
     if (!arguments.length) return $el;
     $el = value;
@@ -159,6 +162,12 @@ function bar(){
     return object;
   };
 
+  object.data = function(value){
+    if (!arguments.length) return data;
+    data = value;
+    return object;
+  };
+
   object.mouseOver = function(value){
     if (!arguments.length) return mouseOver;
     mouseOver = value;
@@ -178,4 +187,4 @@ function bar(){
   };
 
   return object;
-};
+}

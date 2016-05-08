@@ -4,7 +4,6 @@
 	<meta charset="utf-8">
 
 	<link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
-	<script src="bower_components/material-design-lite/material.min.js"></script>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.blue-deep_orange.min.css" />
 
@@ -34,6 +33,48 @@
 		  height: 160px;
 		  width: 10px;
 		}
+
+		.Critical {
+			color: red;
+		}
+
+		.High {
+			color: orange;
+		}
+
+		.Medium {
+			color: blue;
+		}
+
+		.Low {
+			color: green;
+		}
+
+		.nmars-pref {
+			left: calc(100% - 32px);
+			position: relative;
+		}
+
+		.slides {
+			width: 200px;
+		}
+
+		#line {
+			position: relative;;
+		}
+
+		#line-1 {
+			position: absolute;
+		}
+
+		.nmars-pref {
+			position: absolute;
+			right: 0;
+		}
+
+		.mdl-data-table th {
+			text-align: center;
+		}
 	</style>
 <body>
 <!-- Always shows a header, even in smaller screens. -->
@@ -50,6 +91,17 @@
         <a class="mdl-navigation__link" href="">Link</a>
         <a class="mdl-navigation__link" href="">Link</a>
         <a class="mdl-navigation__link" href="">Link</a> -->
+        <!-- Right aligned menu below button -->
+				<button id="demo-menu-lower-right"
+				        class="mdl-button mdl-js-button mdl-button--icon">
+				  <i class="material-icons">more_vert</i>
+				</button>
+
+				<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+				    for="demo-menu-lower-right">
+				  <li class="mdl-menu__item">Login</li>
+				  <li class="mdl-menu__item">Preferences</li>
+				</ul>
       </nav>
     </div>
   </header>
@@ -66,29 +118,54 @@
 
   <main class="mdl-layout__content">
 	  <div id="controls"  class="mdl-grid">
-	    <div class="mdl-cell mdl-cell--2-col mdl-shadow--2dp mdl-textfield--floating-label">
-	    	<label class="" for="amplitude">Amplitude:</label>
-		  	<input id="amplitude" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" onchange="generator.amplitude(parseInt(this.value)); update();" />
-		  </div>
-		  <div class="mdl-cell mdl-cell--2-col mdl-shadow--2dp mdl-textfield--floating-label">
-		  	<label class="" for="growth">Growth:</label>
-		  	<input id="growth" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0" onchange="generator.growth(parseInt(this.value)); update();" />
-		  </div>
-	  	<div class="mdl-cell mdl-cell--1-col mdl-shadow--2dp">
+	  	<div class="mdl-cell mdl-cell--1-col mdl-shadow--2dp mdl-cell--4-offset" style="padding: 0 10;">
 	  		<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 			    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="days" onchange="generator.days(parseInt(this.value));">
 			    <label class="mdl-textfield__label" for="days">Days...</label>
 			    <span class="mdl-textfield__error">Input is not a number!</span>
 			  </div>
 		  </div>
-		  <div class="mdl-cell mdl-cell--1-col mdl-cell--6-offset">
-		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="update();">Update</button>
+
+		  <div class="mdl-cell mdl-cell--2-col mdl-shadow--2dp">
+		  		<h2 id="band" style="text-align: center; margin: 0px; padding: 10;"></h2>
+		  </div>
+
+		  <div class="mdl-cell mdl-cell--2-col mdl-shadow--2dp">
+		  		<h2 id="p95" style="text-align: center; margin: 0px; padding: 10;"></h2>
+		  </div>
+
+		  <div class="mdl-cell mdl-cell--1-col mdl-cell--1-offset">
+		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" onclick="reset();">Reset</button>
+		  </div>
+
+		  <div class="mdl-cell mdl-cell--1-col">
+		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="update();">Update</button>
 		  </div>
 	  </div>
 
 	  <div class="mdl-grid">
 	  	<div id="line" class="mdl-cell mdl-cell--9-col mdl-shadow--2dp">
 		  	<div id="line-1"></div>
+		  	<div id="wrapper" class="nmars-pref">
+			  		<button id="line-pref" class="mdl-button mdl-js-button mdl-button--icon">
+						  <i class="material-icons">more_vert</i>
+						</button>
+
+						<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect slides" data-mdl-for="line-pref">
+						  <li class="mdl-menu__item">
+						  	<p>
+						    	<label class="" for="amplitude">Amplitude:</label>
+							  	<input id="amplitude" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="40" onchange="generator.amplitude(parseInt(this.value)); update();" />
+							  </p>
+						  </li>
+						  <li class="mdl-menu__item">
+						  	<p>
+							  	<label class="" for="growth">Growth:</label>
+							  	<input id="growth" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0" onchange="generator.growth(parseInt(this.value)); update();" />
+							  </p>
+						  </li>
+						</ul>
+					</div>
 		  </div>
 		  <div id="bar" class="mdl-cell mdl-cell--3-col mdl-shadow--2dp">
 				<div id="bar-1"></div>
@@ -96,7 +173,14 @@
 		</div>
 
 		<div class="mdl-grid">
-			<table class="mdl-data-table mdl-js-data-table mdl-cell mdl-cell--10-col mdl-cell--1-offset mdl-shadow--2dp">
+			<table class="mdl-data-table mdl-js-data-table mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+				<colgroup>
+					<col span="3">
+					<col span="2" style="background: #CCC">
+					<col span="6">
+					<col span="4" style="background: #CCC">
+					<col span="1">
+				</colgroup>
 		  	<thead>
 			  	<tr>
 			  		<th rowspan="2">Run</th>
@@ -110,6 +194,7 @@
 			  		<th rowspan="2">Growth</th>
 			  		<th rowspan="2">Days</th>
 			  		<th colspan="4">Bands</th>
+			  		<th rowspan="2">Band</th>
 			  	</tr>
 			  	<tr>
 			  		<th>Lower</th>
@@ -120,61 +205,44 @@
 			  		<th>Critical</th>
 			  	</tr>
 			  </thead>
-			  <tbody>
+			  <tbody id="tableBody">
 			  </tbody>
 			</table>
 		</div>
-	  
-	  <div id="donut-1"></div>
-
-	  
 	</main>
 </div>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-<script src="http://d3js.org/d3.v3.js"></script>
+<script src="bower_components/material-design-lite/material.min.js"></script>
+<script src="bower_components/regression-js/src/regression.js"></script>
+<script src="bower_components/d3/d3.js"></script>
 <script src="d3.line.js"></script>
+<!-- <script src="d3.multiLine.js"></script> -->
 <script src="d3.bar.js"></script>
-<script src="d3.donut.js"></script>
+<!-- <script src="d3.donut.js"></script> -->
 <script src="generator.js"></script>
 
 <script>
 
-// Method used for generate random data.
-var getData = function(myRand){
-  var data = [];
-  
-  for(var i=0; i<100; i++){
-  	var point = Math.round(myRand());
-  	if(point > 100){
-  		point = 100;
-  	}else if(point < 0){
-  		point = 0;
-  	}
-    data.push({
-      x: i,
-      y: point
-    });
-  };
-
-  return data;
-};
-
 /*
 * Create graphs
 */
-var days = 28;
-var generator = generator().days(days);
-var data = generator.calculate();
 var run = 0;
 
-var line = line()
+var days = 28;
+var generator = new Generator();
+		generator.days(days).amplitude(40).growth(25);
+
+var data = generator.calculate();
+
+var line1 = line()
 	.$el(d3.select("#line-1"))
-	.height(200) // Set height
+	.height(200)
 	.width(document.getElementById('line').offsetWidth)
-	.data(data) // Set data
+	.data(data)
 	.render();
+
 var bar = bar()
 	.$el(d3.select("#bar-1"))
 	.data(generator.bands())
@@ -184,27 +252,36 @@ var bar = bar()
 	// .mouseOver(function(d){ alert(d.value); })
 	.render();
 
+var band = generator.band();
+var p95 = generator.threshold(generator.percentile(95));
+
+d3.select('#band').attr('class', band).text(band);
+d3.select('#p95').attr('class', p95).text(p95);
+
 appendTable(generator.stats());
-// var donut = donut()
-// 	.$el(d3.select("#donut-1"))
-// 	.data(bandIt(data))
-// 	.color(["green", "blue", "orange", "red"])
-// 	.render();
 
 window.onresize = function(){
-	line.width(document.getElementById('line').offsetWidth).render();
+	line1.width(document.getElementById('line').offsetWidth).render();
 	bar.width(document.getElementById('bar').offsetWidth).render();
-} ;
+};
 
 function update(){
 	data = generator.calculate();
 
 	appendTable(generator.stats());
 
-	line.data(data).render();
+	line1.data(data).render();
 	bar.data(generator.bands()).render();
-	// donut.data(bandedData).render();
-};
+
+	band = generator.band();
+	p95 = generator.threshold(generator.percentile(95));
+	d3.select('#band').attr('class', band).text(band);
+	d3.select('#p95').attr('class', p95).text(p95);
+}
+
+function reset(){
+	$('#tableBody').empty();
+}
 
 function appendTable(data){
 	var output = "<tr><td>" + run + "</td>";
@@ -215,24 +292,15 @@ function appendTable(data){
 				output += "<td>";
 				output += value;
 				output += "</td>";	
-			})
+			});
 		}else{
 			output += "<td>";
 			output += value;
 			output += "</td>";
 		}
-	})
+	});
 	output += "</tr>";
 	$("tbody").prepend(output);
-};
-
-// setInterval(function(){
-// 	var data = generator().days(days).calculate();
-// 	var bandedData = bandIt(data);
-
-// 	line.data(data).render();
-// 	bar.data(bandedData).render();
-// 	donut.data(bandedData).render();
-// }, 3000);
+}
 </script>
 </html>

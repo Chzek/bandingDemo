@@ -4,36 +4,42 @@
 function donut(){  
   // Default settings
   var $el = d3.select("body");
-  // var margin = { top: 10, right: 30, bottom: 30, left: 30 };
-  var width = 300;
-  var height = 200;
+  var margin = { top: 10, right: 10, bottom: 10, left: 10 };
+  var width = 200 - margin.left - margin.right;
+  var height = 200 - margin.top - margin.bottom;
   var radius = Math.min(width, height) / 2;
-  var color = "steelblue";
+  var color = d3.scale.category20();
   var data = [];  // [{name: "value", value: value},{},...]
   // var showTitle = true;
 
   var currentVal;
-  var color = d3.scale.category20();
   var pie = d3.layout.pie()
     .sort(null)
     .value(function(d) { return d.value; });
 
   var svg, g, arc; 
 
-  var object = {};
+  var object = {
+    $el: $el,
+    width: width,
+    height: height,
+    radius: radius,
+    color: color,
+    data: data
+  };
 
   // Method for render/refresh graph
   object.render = function(){
     if(!svg){
       arc = d3.svg.arc()
         .outerRadius(radius)
-        .innerRadius(radius - (radius/4.5));
+        .innerRadius(radius - (radius/3.5));
 
       svg = $el.append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        .attr("transform", "translate(" + (width + margin.left + margin.right) / 2 + "," + (height + margin.top + margin.bottom) / 2 + ")");
 
       g = svg.selectAll(".arc")
         .data(pie(data))
@@ -49,7 +55,7 @@ function donut(){
             return color[i];
           }else{
             return color;
-          };
+          }
         })
         .attr("stroke", "white")
         .on("mouseover", function(d){
@@ -79,6 +85,11 @@ function donut(){
       });
 
     }else{
+      radius = Math.min(width, height) / 2;
+      arc = d3.svg.arc()
+        .outerRadius(radius)
+        .innerRadius(radius - (radius/3.5));
+
       object.data(data);
       g.data(pie(data)).exit().remove();
 
@@ -90,7 +101,7 @@ function donut(){
         return function(t) {
             return arc(i(t));
         };
-      })
+      });
 
       g.select("text")
       .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; });
@@ -101,12 +112,6 @@ function donut(){
   };
 
   // Getter and setter methods
-  object.data = function(value){
-    if (!arguments.length) return data;
-    data = value;
-    return object;
-  };
-
   object.$el = function(value){
     if (!arguments.length) return $el;
     $el = value;
@@ -127,11 +132,23 @@ function donut(){
     return object;
   };
 
+  object.radius = function(value){
+    if (!arguments.length) return radius;
+    radius = value;
+    return object;
+  };
+
   object.color = function(value){
     if (!arguments.length) return color;
     color = value;
     return object;
   };
 
+  object.data = function(value){
+    if (!arguments.length) return data;
+    data = value;
+    return object;
+  };
+
   return object;
-};
+}

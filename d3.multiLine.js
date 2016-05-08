@@ -1,19 +1,19 @@
 /*
 * Define line graph 
 */
-function line(){
+function multiLine(){
   // Default settings
   var $el = d3.select("body");
   var margin = { top: 10, right: 30, bottom: 30, left: 30 };
   var width = 960 - margin.left - margin.right;
   var height = 500 - margin.top - margin.bottom;
   var color = "steelblue";
-  var data = [];  // [{ x: value, y:value }, {...}, ...]
+  var data = [];  // [[{ x: value, y:value }, {...},... ],[]... ]
   var x = d3.scale.linear().range([0, width]);
-  var svg, y, xAxis, yAxis, line;
+  var svg, y, xAxis, yAxis, series, line;
 
   var object = {
-    $el : $el,
+    $el: $el,
     width: width,
     height: height,
     color: color,
@@ -46,8 +46,13 @@ function line(){
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      x.domain(d3.extent(data, function(d) { return d.x; }));
-      y.domain(d3.extent(data, function(d) { return d.y; }));
+
+      x.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.x; }); }),
+        d3.max(data, function(data){ return d3.max(data, function(d){ return d.x; }); })]
+      );
+      y.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.y; }); }),
+        d3.max(data, function(data){ return d3.max(data, function(d){ return d.y; }); })]
+      );
 
       svg.append("g")
         .attr("class", "x axis")
@@ -58,8 +63,13 @@ function line(){
         .attr("class", "y axis")
         .call(yAxis);
 
-      svg.append("path")
-        .datum(data)
+      series = svg.selectAll(".series")
+        .data(data, function(d, i){ return i; })
+        .enter()
+        .append("g")
+        .attr("class", "series");
+
+      series.append("path")
         .attr("class", "line")
         .attr("stroke", color)
         .attr("d", line);
@@ -68,8 +78,12 @@ function line(){
       y.range([height, 0]);
       x.range([0, width]);
 
-      x.domain(d3.extent(data, function(d) { return d.x; }));
-      y.domain(d3.extent(data, function(d) { return d.y; }));
+      x.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.x; }); }),
+        d3.max(data, function(data){ return d3.max(data, function(d){ return d.x; }); })]
+      );
+      y.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.y; }); }),
+        d3.max(data, function(data){ return d3.max(data, function(d){ return d.y; }); })]
+      );
 
       svg.select("g.y")
         .transition()
@@ -81,11 +95,15 @@ function line(){
         .duration(1000)
         .call(xAxis);
 
-      svg.selectAll("path.line")
-       .datum(data)
+      series = svg.selectAll(".series")
+        .data(data, function(d, i){ return i; });
+
+      series.select("path")
         .transition()
         .duration(1000)
-       .attr("d", line);
+        .attr("d", line);
+
+
     } 
     return object;
   };
@@ -114,7 +132,7 @@ function line(){
     color = value;
     return object;
   };
-  
+
   object.data = function(value){
     if (!arguments.length) return data;
     data = value;
