@@ -71,7 +71,13 @@ function multiLine(){
 
       series.append("path")
         .attr("class", "line")
-        .attr("stroke", color)
+        .attr("stroke", function(d, i){
+          if(typeof(color) === "object"){
+            return color[i];
+          }else{
+            return color;
+          }
+        })
         .attr("d", line);
     }else{ //Refresh
       object.data(data);
