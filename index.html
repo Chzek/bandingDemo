@@ -5,7 +5,6 @@
 
 	<link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
 	<link rel="stylesheet" href="bower_components/material-design-icons/iconfont/material-icons.css">
-	<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
 	<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.blue-deep_orange.min.css">
 
 	<style>
@@ -247,6 +246,7 @@ var generator = new Generator();
 		generator.days(days).amplitude(40).growth(25);
 
 var data = generator.calculate();
+var regData = regressionData(data);
 
 var line1 = line()
 	.$el(d3.select("#line-1"))
@@ -260,10 +260,8 @@ var line2 = multiLine()
 	.height(200)
 	.width(document.getElementById('regression').offsetWidth)
 	.color(['steelblue','violet'])
-	.data([data, regressionReturn(regression('polynomial', regressionPrep(data), 4).points)])
+	.data([data, regData.line])
 	.render();
-
-var scatterData = difference(data, regressionReturn(regression('polynomial', regressionPrep(data), 4).points));
 
 var bar = bar()
 	.$el(d3.select("#bar-1"))
@@ -277,7 +275,7 @@ var bar = bar()
 var scatter = scatter()
 	.$el(d3.select("#scatter-1"))
 	.width(document.getElementById('scatter').offsetWidth)
-	.data(scatterData.data)
+	.data(regData.scatter.data)
 	.render();
 
 var band = generator.band();
@@ -296,14 +294,14 @@ window.onresize = function(){
 
 function update(){
 	data = generator.calculate();
-	var scatterData = difference(data, regressionReturn(regression('polynomial', regressionPrep(data), 4).points));
+	regData = regressionData(data);
 
 	appendTable(generator.stats());
 
 	line1.data(data).render();
-	line2.data([data, regressionReturn(regression('polynomial', regressionPrep(data), 4).points)]).render();
+	line2.data([data, regData.line]).render();
 	bar.data(generator.bands()).render();
-	scatter.data(scatterData.data).render();
+	scatter.data(regData.scatter.data).render();
 
 	band = generator.band();
 	p95 = generator.threshold(generator.percentile(95));
@@ -356,16 +354,35 @@ function difference(data1, data2){
 		mean: false,
 		variance: false,
 		data: []
-	}
+	};
 	
 	data1.forEach(function(d, i){
 		output.data.push({x: i, y: (d.y - data2[i].y)});
 	});
 
-	output.mean = d3.mean(output.data);
-	output.variance = d3.variance(output.data);
+	output.mean = d3.mean(function(d){ return d.y; });
+	output.variance = d3.variance(function(d){ return d.y; });
 
 	return output;
+}
+
+function regressionData(data){
+	var regressionObj = {
+		line: [],
+		scatter: []
+	};
+	var chunk = 96;
+	var j = 0;
+	for(var i = 0; i < data.length/chunk; i++){
+		var tempAry = data.slice(i*96, (i+1)*chunk);
+		regressionReturn(regression('polynomial', regressionPrep(tempAry), 4).points).forEach(function(d){
+			regressionObj.line.push({x: j, y: d.y});
+			j++;
+		});
+	}
+	regressionObj.scatter = difference(data, regressionObj.line);
+
+	return regressionObj;
 }
 
 </script>
