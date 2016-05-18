@@ -59,11 +59,11 @@
 			width: 200px;
 		}
 
-		#line {
+		#regression {
 			position: relative;;
 		}
 
-		#line-1 {
+		#line {
 			position: absolute;
 		}
 
@@ -144,29 +144,29 @@
 	  </div>
 
 	  <div class="mdl-grid">
-	  	<div id="line" class="mdl-cell mdl-cell--9-col mdl-shadow--2dp">
-		  	<div id="line-1"></div>
+	  	<div id="regression" class="mdl-cell mdl-cell--9-col mdl-shadow--2dp">
+		  	<div id="line"></div>
 		  	<div id="wrapper" class="nmars-pref">
-			  		<button id="line-pref" class="mdl-button mdl-js-button mdl-button--icon">
-						  <i class="material-icons">more_vert</i>
-						</button>
+		  		<button id="line-pref" class="mdl-button mdl-js-button mdl-button--icon">
+					  <i class="material-icons">more_vert</i>
+					</button>
 
-						<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect slides" data-mdl-for="line-pref">
-						  <li class="mdl-menu__item">
-						  	<p>
-						    	<label class="" for="amplitude">Amplitude:</label>
-							  	<input id="amplitude" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="40" onchange="generator.amplitude(parseInt(this.value)); update();" />
-							  	<output></output>
-							  </p>
-						  </li>
-						  <li class="mdl-menu__item">
-						  	<p>
-							  	<label class="" for="growth">Growth:</label>
-							  	<input id="growth" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0" onchange="generator.growth(parseInt(this.value)); update();" />
-							  </p>
-						  </li>
-						</ul>
-					</div>
+					<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect slides" data-mdl-for="line-pref">
+					  <li class="mdl-menu__item">
+					  	<p>
+					    	<label class="" for="amplitude">Amplitude:</label>
+						  	<input id="amplitude" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="40" onchange="generator.amplitude(parseInt(this.value)); update();" />
+						  	<output></output>
+						  </p>
+					  </li>
+					  <li class="mdl-menu__item">
+					  	<p>
+						  	<label class="" for="growth">Growth:</label>
+						  	<input id="growth" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0" onchange="generator.growth(parseInt(this.value)); update();" />
+						  </p>
+					  </li>
+					</ul>
+				</div>
 		  </div>
 		  <div id="bar" class="mdl-cell mdl-cell--3-col mdl-shadow--2dp">
 				<div id="bar-1"></div>
@@ -174,10 +174,10 @@
 		</div>
 
 		<div class="mdl-grid">
-	  	<div id="regression" class="mdl-cell mdl-cell--9-col mdl-shadow--2dp">
-		  	<div id="line-2"></div>
+	  	<div id="" class="mdl-cell mdl-cell--7-col mdl-shadow--2dp">
+		  	<div id="histo"></div>
 		  </div>
-		  <div id="scatter" class="mdl-cell mdl-cell--3-col mdl-shadow--2dp">
+		  <div id="scatter" class="mdl-cell mdl-cell--5-col mdl-shadow--2dp">
 				<div id="scatter-1"></div>
 			</div>
 		</div>
@@ -233,6 +233,7 @@
 <!-- <script src="d3.donut.js"></script> -->
 <script src="generator.js"></script>
 <script src="d3.scatter.js"></script>
+<script src="d3.histogram.js"></script>
 
 <script>
 
@@ -248,21 +249,13 @@ var generator = new Generator();
 var data = generator.calculate();
 var regData = regressionData(data);
 
-var line1 = line()
-	.$el(d3.select("#line-1"))
-	.height(200)
-	.width(document.getElementById('line').offsetWidth)
-	.data(data)
-	.render();
-
 var line2 = multiLine()
-	.$el(d3.select("#line-2"))
+	.$el(d3.select("#line"))
 	.height(200)
 	.width(document.getElementById('regression').offsetWidth)
 	.color(['steelblue','violet'])
 	.data([data, regData.line])
 	.render();
-
 var bar = bar()
 	.$el(d3.select("#bar-1"))
 	.data(generator.bands())
@@ -271,11 +264,18 @@ var bar = bar()
 	.labelColor(["black", "white", "black", "black"])
 	// .mouseOver(function(d){ alert(d.value); })
 	.render();
-
 var scatter = scatter()
 	.$el(d3.select("#scatter-1"))
 	.width(document.getElementById('scatter').offsetWidth)
 	.data(regData.scatter.data)
+	.render();
+	console.log(scatter.width());
+var histo = histogram()
+	.$el(d3.select("#histo"))
+	.height(200)
+	.width(document.getElementById('histo').offsetWidth)
+	.data(histoData(regData.scatter.data))
+	.binCount(20)
 	.render();
 
 var band = generator.band();
@@ -287,23 +287,25 @@ d3.select('#p95').attr('class', p95).text(p95);
 appendTable(generator.stats());
 
 window.onresize = function(){
-	line1.width(document.getElementById('line').offsetWidth).render();
 	line2.width(document.getElementById('regression').offsetWidth).render();
+	scatter.width(document.getElementById('scatter').offsetWidth).render();
+	histo.width(document.getElementById('histo').offsetWidth).render();
 	bar.width(document.getElementById('bar').offsetWidth).render();
 };
 
 function update(){
 	data = generator.calculate();
 	regData = regressionData(data);
+	bands = generator.bands();
+	band = generator.band();
 
 	appendTable(generator.stats());
 
-	line1.data(data).render();
 	line2.data([data, regData.line]).render();
-	bar.data(generator.bands()).render();
+	bar.data(bands).render();
 	scatter.data(regData.scatter.data).render();
+	histo.data(histoData(regData.scatter.data)).render();
 
-	band = generator.band();
 	p95 = generator.threshold(generator.percentile(95));
 	d3.select('#band').attr('class', band).text(band);
 	d3.select('#p95').attr('class', p95).text(p95);
@@ -383,6 +385,14 @@ function regressionData(data){
 	regressionObj.scatter = difference(data, regressionObj.line);
 
 	return regressionObj;
+}
+
+function histoData(data){
+	var tempAry = [];
+	data.forEach(function(d){
+		tempAry.push(d.y);
+	});
+	return tempAry;
 }
 
 </script>

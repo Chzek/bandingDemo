@@ -46,7 +46,6 @@ function multiLine(){
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
       x.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.x; }); }),
         d3.max(data, function(data){ return d3.max(data, function(d){ return d.x; }); })]
       );
@@ -108,8 +107,6 @@ function multiLine(){
         .transition()
         .duration(1000)
         .attr("d", line);
-
-
     } 
     return object;
   };

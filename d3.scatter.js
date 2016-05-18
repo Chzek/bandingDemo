@@ -4,7 +4,7 @@
 function scatter(){
   // Default settings
   var $el = d3.select("body");
-  var margin = { top: 10, right: 30, bottom: 30, left: 35 };
+  var margin = { top: 10, right: 30, bottom: 30, left: 30 };
   var width = 300 - margin.left - margin.right;
   var height = 200 - margin.top - margin.bottom;
   var color = "steelblue";
@@ -33,6 +33,9 @@ function scatter(){
   		x.domain([d3.min(data, function(d) { return d.x; }), d3.max(data, function(d) { return d.x; })]);
       y.domain([d3.min(data, function(d) { return d.y; }), d3.max(data, function(d) { return d.y; })]);
 
+      x.range([0, width]);
+      y.range([height, 0]);
+      
       xAxis = d3.svg.axis()
 	      .scale(x)
 	      .orient("bottom");
@@ -69,6 +72,9 @@ function scatter(){
   		object.data(data);
   		x.domain([d3.min(data, function(d) { return d.x; }), d3.max(data, function(d) { return d.x; })]);
       y.domain([d3.min(data, function(d) { return d.y; }), d3.max(data, function(d) { return d.y; })]);
+
+      x.range([0, width]);
+      y.range([height, 0]);
 
   		svg.select("g.x")
 	      .transition()
