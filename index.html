@@ -118,9 +118,13 @@
 
   <main class="mdl-layout__content">
 	  <div id="controls"  class="mdl-grid">
-	  	<div class="mdl-cell mdl-cell--1-col mdl-shadow--2dp mdl-cell--4-offset" style="padding: 0 10;">
+			<div class="mdl-cell mdl-cell--1-col mdl-cell--1-offset">
+		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" onclick="loadData();">Load</button>
+		  </div>
+
+	  	<div class="mdl-cell mdl-cell--1-col mdl-shadow--2dp mdl-cell--2-offset" style="padding: 0 10;">
 	  		<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-			    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="days" onchange="generator.days(parseInt(this.value));">
+			    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="days" onchange="generator.days(parseInt(this.value)); stats.days(parseInt(this.value));">
 			    <label class="mdl-textfield__label" for="days">Days...</label>
 			    <span class="mdl-textfield__error">Input is not a number!</span>
 			  </div>
@@ -187,7 +191,7 @@
 				<colgroup>
 					<col span="3">
 					<col span="2" style="background: #CCC">
-					<col span="6">
+					<col span="4">
 					<col span="4" style="background: #CCC">
 					<col span="1">
 				</colgroup>
@@ -200,8 +204,6 @@
 			  		<th rowspan="2">Mean</th>
 			  		<th rowspan="2">Deviation</th>
 			  		<th rowspan="2">Varience</th>
-			  		<th rowspan="2">Amplitude</th>
-			  		<th rowspan="2">Growth</th>
 			  		<th rowspan="2">Days</th>
 			  		<th colspan="4">Bands</th>
 			  		<th rowspan="2">Band</th>
@@ -234,6 +236,7 @@
 <script src="generator.js"></script>
 <script src="d3.scatter.js"></script>
 <script src="d3.histogram.js"></script>
+<script src="stats.js"></script>
 
 <script>
 
@@ -244,47 +247,51 @@ var run = 0;
 
 var days = 28;
 var generator = new Generator();
-		generator.days(days).amplitude(40).growth(25);
+var stats = new Stats();
+
+generator.days(days).amplitude(40).growth(25);
+stats.days(days);
 
 var data = generator.calculate();
-var regData = regressionData(data);
+stats.data(data);
 
+var regData = regressionData(data);
+console.log(document.getElementById('regression').offsetWidth);
 var line2 = multiLine()
 	.$el(d3.select("#line"))
 	.height(200)
 	.width(document.getElementById('regression').offsetWidth)
 	.color(['steelblue','violet'])
-	.data([data, regData.line])
-	.render();
+	.data([data, regData.line]);
+	// .render();
+console.log(document.getElementById('regression').offsetWidth);
 var bar = bar()
 	.$el(d3.select("#bar-1"))
-	.data(generator.bands())
+	.data(stats.bands())
 	.width(document.getElementById('bar').offsetWidth)
 	.color(["green", "blue", "orange", "red"])
-	.labelColor(["black", "white", "black", "black"])
-	// .mouseOver(function(d){ alert(d.value); })
-	.render();
+	.labelColor(["black", "white", "black", "black"]);
+	// .render();
 var scatter = scatter()
 	.$el(d3.select("#scatter-1"))
 	.width(document.getElementById('scatter').offsetWidth)
-	.data(regData.scatter.data)
-	.render();
-	console.log(scatter.width());
+	.data(regData.scatter.data);
+	// .render();
 var histo = histogram()
 	.$el(d3.select("#histo"))
 	.height(200)
 	.width(document.getElementById('histo').offsetWidth)
-	.data(histoData(regData.scatter.data))
-	.binCount(20)
-	.render();
+	.data(histoData(data))
+	.binCount(40);
+	// .render();
 
-var band = generator.band();
-var p95 = generator.threshold(generator.percentile(95));
+var band = stats.band();
+var p95 = stats.threshold(stats.percentile(95));
 
 d3.select('#band').attr('class', band).text(band);
 d3.select('#p95').attr('class', p95).text(p95);
 
-appendTable(generator.stats());
+appendTable(stats.stats());
 
 window.onresize = function(){
 	line2.width(document.getElementById('regression').offsetWidth).render();
@@ -293,20 +300,28 @@ window.onresize = function(){
 	bar.width(document.getElementById('bar').offsetWidth).render();
 };
 
+window.onload = function(){
+	line2.width(document.getElementById('regression').offsetWidth).render();
+	scatter.width(document.getElementById('scatter').offsetWidth).render();
+	histo.width(document.getElementById('histo').offsetWidth).render();
+	bar.width(document.getElementById('bar').offsetWidth).render();
+}
+
 function update(){
 	data = generator.calculate();
+	stats.data(data);
 	regData = regressionData(data);
-	bands = generator.bands();
-	band = generator.band();
+	bands = stats.bands();
+	band = stats.band();
+	p95 = stats.threshold(stats.percentile(95));
 
-	appendTable(generator.stats());
+	appendTable(stats.stats());
 
 	line2.data([data, regData.line]).render();
 	bar.data(bands).render();
 	scatter.data(regData.scatter.data).render();
-	histo.data(histoData(regData.scatter.data)).render();
+	histo.data(histoData(data)).render();
 
-	p95 = generator.threshold(generator.percentile(95));
 	d3.select('#band').attr('class', band).text(band);
 	d3.select('#p95').attr('class', p95).text(p95);
 }
@@ -393,6 +408,30 @@ function histoData(data){
 		tempAry.push(d.y);
 	});
 	return tempAry;
+}
+
+function loadData(){
+	d3.csv('sampleData.csv', function(d, i){
+		return {x: +i, y: +d.UEUSG};
+	}, function(error, rows){
+		data = rows;
+		stats.days(28);
+		stats.data(data);
+		band = stats.band();
+		p95 = stats.threshold(stats.percentile(95));
+		regData = regressionData(rows);
+
+		line2.data([data, regData.line]).render();
+		bar.data(stats.bands()).render();
+		scatter.data(regData.scatter.data).render();
+		histo.data(histoData(data)).render();
+
+		appendTable(stats.stats());
+
+		p95 = stats.threshold(stats.percentile(95));
+		d3.select('#band').attr('class', band).text(band);
+		d3.select('#p95').attr('class', p95).text(p95);
+	});
 }
 
 </script>

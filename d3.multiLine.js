@@ -25,11 +25,11 @@ function multiLine(){
   object.render = function(){
     if(!svg){ // Render first time
       y = d3.scale.linear()
-      .range([height, 0]);
+        .range([height, 0]);
 
       xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
+        .scale(x)
+        .orient("bottom");
 
       yAxis = d3.svg.axis()
         .scale(y)
@@ -38,7 +38,6 @@ function multiLine(){
       line = d3.svg.line()
         .x(function(d) { return x(d.x); })
         .y(function(d) { return y(d.y); });
-       // .interpolate("basis");
 
       svg = $el.append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -46,12 +45,14 @@ function multiLine(){
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      x.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.x; }); }),
-        d3.max(data, function(data){ return d3.max(data, function(d){ return d.x; }); })]
-      );
-      y.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.y; }); }),
-        d3.max(data, function(data){ return d3.max(data, function(d){ return d.y; }); })]
-      );
+      x.domain([
+        d3.min(data, function(data){ return d3.min(data, function(d){ return +d.x; }); }),
+        d3.max(data, function(data){ return d3.max(data, function(d){ return +d.x; }); })
+      ]);
+      y.domain([
+        d3.min(data, function(data){ return d3.min(data, function(d){ return +d.y; }); }),
+        d3.max(data, function(data){ return d3.max(data, function(d){ return +d.y; }); })
+      ]);
 
       svg.append("g")
         .attr("class", "x axis")
@@ -83,12 +84,14 @@ function multiLine(){
       y.range([height, 0]);
       x.range([0, width]);
 
-      x.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.x; }); }),
-        d3.max(data, function(data){ return d3.max(data, function(d){ return d.x; }); })]
-      );
-      y.domain([d3.min(data, function(data){ return d3.min(data, function(d){ return d.y; }); }),
-        d3.max(data, function(data){ return d3.max(data, function(d){ return d.y; }); })]
-      );
+      x.domain([
+        d3.min(data, function(data){ return d3.min(data, function(d){ return +d.x; }); }),
+        d3.max(data, function(data){ return d3.max(data, function(d){ return +d.x; }); })
+      ]);
+      y.domain([
+        d3.min(data, function(data){ return d3.min(data, function(d){ return +d.y; }); }),
+        d3.max(data, function(data){ return d3.max(data, function(d){ return +d.y; }); })
+      ]);
 
       svg.select("g.y")
         .transition()
