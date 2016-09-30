@@ -75,6 +75,25 @@
 		.mdl-data-table th {
 			text-align: center;
 		}
+
+		.mdl-button--file input {
+		  cursor: pointer;
+		  height: 100%;
+		  right: 0;
+		  opacity: 0;
+		  position: absolute;
+		  top: 0;
+		  width: 300px;
+		  z-index: 4;
+		}
+
+		.mdl-textfield--file .mdl-textfield__input {
+		  box-sizing: border-box;
+		  width: calc(100% - 32px);
+		}
+		.mdl-textfield--file .mdl-button--file {
+		  right: 0;
+		}
 	</style>
 </head>
 <body>
@@ -119,11 +138,11 @@
 
   <main class="mdl-layout__content">
 	  <div id="controls"  class="mdl-grid">
-			<div class="mdl-cell mdl-cell--1-col mdl-cell--1-offset">
-		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" onclick="loadData();">Load</button>
+			<div class="mdl-cell mdl-cell--2-col mdl-cell--1-offset">
+		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent show-modal">External Data</button>
 		  </div>
 
-	  	<div class="mdl-cell mdl-cell--1-col mdl-shadow--2dp mdl-cell--2-offset" style="padding: 0 10;">
+	  	<div class="mdl-cell mdl-cell--1-col mdl-shadow--2dp mdl-cell--1-offset" style="padding: 0 10;">
 	  		<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 			    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="days" onchange="generator.days(parseInt(this.value)); stats.days(parseInt(this.value));">
 			    <label class="mdl-textfield__label" for="days">Days...</label>
@@ -132,24 +151,21 @@
 		  </div>
 
 		  <div class="mdl-cell mdl-cell--2-col mdl-shadow--2dp">
-		  		<h2 id="band" style="text-align: center; margin: 0px; padding: 10;"></h2>
-		  </div>
+	  		<h2 id="band" style="text-align: center; margin: 0px; padding: 10;"></h2>
+	  	</div>
 
 		  <div class="mdl-cell mdl-cell--2-col mdl-shadow--2dp">
 		  		<h2 id="p95" style="text-align: center; margin: 0px; padding: 10;"></h2>
 		  </div>
 
-		  <div class="mdl-cell mdl-cell--1-col mdl-cell--1-offset">
-		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" onclick="reset();">Reset</button>
-		  </div>
-
-		  <div class="mdl-cell mdl-cell--1-col">
-		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary" onclick="update();">Update</button>
+		  <div class="mdl-cell mdl-cell--2-col mdl-cell--1-offset">
+		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent"
+		  					onclick="data = generator.calculate(); update(data);">Random Data</button>
 		  </div>
 	  </div>
 
 	  <div class="mdl-grid">
-	  	<div id="regression" class="mdl-cell mdl-cell--9-col mdl-shadow--2dp">
+	  	<div id="regression" class="mdl-cell mdl-cell--5-col mdl-shadow--2dp">
 		  	<div id="line"></div>
 		  	<div id="wrapper" class="nmars-pref">
 		  		<button id="line-pref" class="mdl-button mdl-js-button mdl-button--icon">
@@ -160,31 +176,40 @@
 					  <li class="mdl-menu__item">
 					  	<p>
 					    	<label class="" for="amplitude">Amplitude:</label>
-						  	<input id="amplitude" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="40" onchange="generator.amplitude(parseInt(this.value)); update();" />
+						  	<input id="amplitude" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="40" onchange="generator.amplitude(parseInt(this.value)); update(data);" />
 						  	<output></output>
 						  </p>
 					  </li>
 					  <li class="mdl-menu__item">
 					  	<p>
 						  	<label class="" for="growth">Growth:</label>
-						  	<input id="growth" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0" onchange="generator.growth(parseInt(this.value)); update();" />
+						  	<input id="growth" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="25" tabindex="0" onchange="generator.growth(parseInt(this.value)); update(data);" />
 						  </p>
 					  </li>
 					</ul>
 				</div>
 		  </div>
-		  <div id="bar" class="mdl-cell mdl-cell--3-col mdl-shadow--2dp">
+		  <div id="bar" class="mdl-cell mdl-cell--2-col mdl-shadow--2dp">
 				<div id="bar-1"></div>
 			</div>
+			<div class="mdl-cell mdl-cell--5-col mdl-shadow--2dp">
+		  	<div id="histo"></div>
+		  </div>
+
 		</div>
 
 		<div class="mdl-grid">
-	  	<div class="mdl-cell mdl-cell--7-col mdl-shadow--2dp">
-		  	<div id="histo"></div>
-		  </div>
-		  <div id="scatter" class="mdl-cell mdl-cell--5-col mdl-shadow--2dp">
+	  	
+		 <!--  <div id="scatter" class="mdl-cell mdl-cell--5-col mdl-shadow--2dp">
 				<div id="scatter-1"></div>
-			</div>
+			</div> -->
+		</div>
+
+		<div class="mdl-grid">
+			<div class="mdl-cell mdl-cell--2-col mdl-cell--5-offset">
+		  	<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent"
+		  					onclick="reset();">Clear Table</button>
+		  </div>
 		</div>
 
 		<div class="mdl-grid">
@@ -222,14 +247,89 @@
 			  </tbody>
 			</table>
 		</div>
+
 	</main>
 </div>
+
+<dialog class="mdl-dialog">
+	<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+
+	  <div class="mdl-tabs__tab-bar">
+	      <a href="#file-panel" class="mdl-tabs__tab is-active">From File</a>
+	      <a href="#server-panel" class="mdl-tabs__tab">From Server</a>
+	  </div>
+
+	  <div class="mdl-tabs__panel is-active mdl-dialog__content" id="file-panel">
+			<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
+			  <input type="radio" id="option-1" class="mdl-radio__button" name="bias" value="E" checked>
+			  <span class="mdl-radio__label">Egress</span>
+			</label>
+			<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-2">
+			  <input type="radio" id="option-2" class="mdl-radio__button" name="bias" value="I">
+			  <span class="mdl-radio__label">Ingress</span>
+			</label>
+
+	    <div class="mdl-textfield mdl-js-textfield mdl-textfield--file">
+		    <input class="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" name="file" readonly/>
+		    <div class="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
+		      <i class="material-icons">attach_file</i><input type="file" id="uploadBtn">
+		    </div>
+		  </div>
+	  </div>
+
+	  <div class="mdl-tabs__panel mdl-dialog__content" id="server-panel">
+	  	<div class="mdl-grid">
+	  		<div class="mdl-cell mdl-cell--8-col">
+			    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				    <input class="mdl-textfield__input" type="text" id="node" name="server">
+				    <label class="mdl-textfield__label" for="node">CLLI...</label>
+				  </div>
+				</div>
+				<div class="mdl-cell mdl-cell--4-col">
+				  <button id="lookup" class="mdl-button mdl-js-button mdl-button--raised">
+					  Lookup
+					</button>
+				</div>
+			</div>
+			<div class="mdl-grid">
+				<select id="port"></select>
+				<input type="hidden" id="neModel" value="false" />
+			</div>
+	  </div>
+
+	</div>
+	<div class="mdl-dialog__actions mdl-dialog__actions">
+    <button type="button" class="mdl-button" onClick="loadData();">Load</button
+>    <button type="button" class="mdl-button close">Cancel</button>
+  </div>
+</dialog>
+<script>
+	var dialog = document.querySelector('dialog');
+  var showModalButton = document.querySelector('.show-modal');
+
+  if (! dialog.showModal) {
+    dialogPolyfill.registerDialog(dialog);
+  }
+
+  showModalButton.addEventListener('click', function() {
+    dialog.showModal();
+  });
+
+  dialog.querySelector('.close').addEventListener('click', function() {
+    dialog.close();
+  });
+
+  document.getElementById("uploadBtn").onchange = function () {
+    document.getElementById("uploadFile").value = this.files[0].name;
+	};
+</script>
 </body>
 
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/material-design-lite/material.min.js"></script>
 <script src="bower_components/regression-js/src/regression.js"></script>
 <script src="bower_components/d3/d3.js"></script>
+<script src="bower_components/papaparse/papaparse.min.js"></script>
 <script src="d3.line.js"></script>
 <script src="d3.multiLine.js"></script>
 <script src="d3.bar.js"></script>
@@ -246,70 +346,44 @@
 	*/
 	var run = 0;
 
-	var days = 28;
+	var days = 7;
 	var generator = new Generator();
 	var stats = new Stats();
+	var regData, bands, band, p95, data;
 
 	generator.days(days).amplitude(40).growth(25);
 	stats.days(days);
 
 	var data = generator.calculate();
-	stats.data(data);
 
-	var regData = regressionData(data);
-	console.log(document.getElementById('regression').offsetWidth);
 	var line2 = multiLine()
 		.$el(d3.select("#line"))
 		.height(200)
-		.width(document.getElementById('regression').offsetWidth)
-		.color(['steelblue','violet'])
-		.data([data, regData.line]);
-		// .render();
-	console.log(document.getElementById('regression').offsetWidth);
+		.color(['steelblue','violet']);
+
 	var bar = bar()
 		.$el(d3.select("#bar-1"))
-		.data(stats.bands())
-		.width(document.getElementById('bar').offsetWidth)
 		.color(["green", "blue", "orange", "red"])
 		.labelColor(["black", "white", "black", "black"]);
-		// .render();
-	var scatter = scatter()
-		.$el(d3.select("#scatter-1"))
-		.width(document.getElementById('scatter').offsetWidth)
-		.data(regData.scatter.data);
-		// .render();
+
+	// var scatter = scatter()
+	// 	.$el(d3.select("#scatter-1"));
+
 	var histo = histogram()
 		.$el(d3.select("#histo"))
 		.height(200)
-		.width(document.getElementById('histo').offsetWidth)
-		.data(histoData(data))
-		.binCount(40);
-		// .render();
-
-	var band = stats.band();
-	var p95 = stats.threshold(stats.percentile(95));
-
-	d3.select('#band').attr('class', band).text(band);
-	d3.select('#p95').attr('class', p95).text(p95);
-
-	appendTable(stats.stats());
+		.binCount(20);
 
 	window.onresize = function(){
-		line2.width(document.getElementById('regression').offsetWidth).render();
-		scatter.width(document.getElementById('scatter').offsetWidth).render();
-		histo.width(document.getElementById('histo').offsetWidth).render();
-		bar.width(document.getElementById('bar').offsetWidth).render();
+		update(data);
 	};
 
 	window.onload = function(){
-		line2.width(document.getElementById('regression').offsetWidth).render();
-		scatter.width(document.getElementById('scatter').offsetWidth).render();
-		histo.width(document.getElementById('histo').offsetWidth).render();
-		bar.width(document.getElementById('bar').offsetWidth).render();
-	}
+		generator.calculate();
+		update(data);	
+	};
 
-	function update(){
-		data = generator.calculate();
+	function update(data){	
 		stats.data(data);
 		regData = regressionData(data);
 		bands = stats.bands();
@@ -318,10 +392,20 @@
 
 		appendTable(stats.stats());
 
-		line2.data([data, regData.line]).render();
-		bar.data(bands).render();
-		scatter.data(regData.scatter.data).render();
-		histo.data(histoData(data)).render();
+		var lineWidth = document.getElementById('regression').offsetWidth;
+		var barWidth = document.getElementById('bar').offsetWidth;
+		// var scatterWidth = document.getElementById('scatter').offsetWidth;
+		var histoWidth = document.getElementById('histo').offsetWidth;
+
+		line2.width(lineWidth)
+			.data([data, regData.line]).render();
+
+		bar.width(barWidth)
+			.data(bands).render();
+		// scatter.width(scatterWidth)
+		// 	.data(regData.scatter.data).render();
+		histo.width(histoWidth)
+			.data(histoData(data)).render();
 
 		d3.select('#band').attr('class', band).text(band);
 		d3.select('#p95').attr('class', p95).text(p95);
@@ -412,40 +496,82 @@
 	}
 
 	function loadData(){
-		$.getJSON("http://protoNmars.dev/scripts/NetOp/index.php",
-			{ necompid: 3207993,
-				nemodel: 'ADTRAN .TA5000.TA5000_23Inch',
-				rtype: 'u',
-				dateoff: 14
+		// Debating an attempt at having this be a two fold approach.
+		// First ask if the user would like to load from CSV or remote. Then load the data appropriately.
+		var bias = "EUSG";
+		if($("input[name='bias']:checked").val() !== "E"){
+			bias = "IUSG";
+		}
+
+		if($("input[name='file']").val() !== ""){
+			var config = {
+				header: true,
+				complete: function(results, file) {
+					console.log("Parsing complete:", results, file);
+				}
+			};
+			Papa.parse(document.getElementById('uploadBtn').files[0], {
+				header: true,
+				complete: function(results, file) {
+					var tempData = [];
+					results.data.forEach(function(d,i){
+						tempData.push({ x: +i, y: +d[bias]});
+					});
+					update(tempData);
+					console.log("Parsing complete:", results, file);
+					dialog.close();
+				}
+			});
+		}else if($("input[name='server']").val() !== ""){
+			var url = "http://protonmars.dev/scripts/NetOp/index.php";
+			var lookup = {
+				necompid: $('#port').val(),
+				nemodel: 	$('#neModel').val(),
+				rtype: 		"u",
+				dateoff: 	14
+			};
+
+			$.getJSON(url, lookup)
+			.success(function(data){
+				var tempData = [];
+				data.forEach(function(d,i){
+					tempData.push({ x: +i, y: +d[bias]});
+				});
+				update(tempData);
+				dialog.close();
 			})
+			.fail(function(error){
+				console.log("Fail", error);
+			});
+		}else{
+			alert("Error!");
+		}
+	}
+
+$('#lookup').on('click', function(e){
+	var node = $('#node').val() || false;
+	if(node){
+		$.getJSON("lookup.php", { node: node	})
 		.success(function(data){
 			console.log("Success", data);
+			var $el = $('#port');
+			$el.empty();
+
+			$.each(data.ports, function(i, d){
+				$el.append($("<option></option>")
+    			.attr("value", d.neComp).text(d.Index));
+			});
+
+			$("#neModel").val(data.info.neModel);
 		})
 		.fail(function(error){
 			console.log("Fail", error);
-			d3.csv('sampleData.csv', function(d, i){
-				return {x: +i, y: +d.UEUSG};
-			}, function(error, rows){
-				data = rows;
-				stats.days(28);
-				stats.data(data);
-				band = stats.band();
-				p95 = stats.threshold(stats.percentile(95));
-				regData = regressionData(rows);
-
-				line2.data([data, regData.line]).render();
-				bar.data(stats.bands()).render();
-				scatter.data(regData.scatter.data).render();
-				histo.data(histoData(data)).render();
-
-				appendTable(stats.stats());
-
-				p95 = stats.threshold(stats.percentile(95));
-				d3.select('#band').attr('class', band).text(band);
-				d3.select('#p95').attr('class', p95).text(p95);
-			});
 		});
+	}else{
+		alert("Please enter a CLLI code.");
+		return;
 	}
+});
 
 </script>
 </html>

@@ -4,12 +4,13 @@
 function line(){
   // Default settings
   var $el = d3.select("body");
-  var margin = { top: 10, right: 30, bottom: 30, left: 30 };
+  var margin = { top: 0, right: 0, bottom: 0, left: 0 };
   var width = 960 - margin.left - margin.right;
   var height = 500 - margin.top - margin.bottom;
   var color = "steelblue";
   var data = [];  // [{ x: value, y:value }, {...}, ...]
   var x = d3.scale.linear().range([0, width]);
+  var title = "";
   var svg, y, xAxis, yAxis, line;
 
   var object = {
@@ -18,6 +19,7 @@ function line(){
     height: height,
     color: color,
     data: data,
+    title: title,
     x: x
   };
 
@@ -26,6 +28,8 @@ function line(){
     if(!svg){ // Render first time
       y = d3.scale.linear()
       .range([height, 0]);
+
+      x = d3.scale.linear().range([0, width]);  // TODO: Need to check this out in bandingDemo
 
       xAxis = d3.svg.axis()
       .scale(x)
@@ -41,9 +45,10 @@ function line(){
        // .interpolate("basis");
 
       svg = $el.append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width)
+        .attr("height", height)
         .append("g")
+        .attr("class", "nmars-line")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       x.domain(d3.extent(data, function(d) { return d.x; }));
@@ -63,6 +68,14 @@ function line(){
         .attr("class", "line")
         .attr("stroke", color)
         .attr("d", line);
+
+      /* need to figure out what options should be available here */
+      svg.append("text")
+        .attr("x", 2)         // Possible option, center (width/2), left (margin.left || 2)         
+        .attr("y", height - 5)
+        .attr("text-anchor", "left")  // Possible option
+        .style("font-size", "16px")     // Possible option
+        .text(title);
     }else{ //Refresh
       object.data(data);
       y.range([height, 0]);
@@ -118,6 +131,12 @@ function line(){
   object.data = function(value){
     if (!arguments.length) return data;
     data = value;
+    return object;
+  };
+
+  object.title = function(value){
+    if (!arguments.length) return title;
+    title = value;
     return object;
   };
 
